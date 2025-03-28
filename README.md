@@ -1,145 +1,162 @@
-# Continuum Ads Digital Twin
+# Continuum Digital Twin
 
-A comprehensive ad experimentation platform that replicates the ad processes of major platforms including Google, Facebook, Instagram, Twitter, LinkedIn, TikTok, and Snapchat. This digital twin provides real-time simulation to optimize advertising campaigns through fast iteration and efficient ad management.
+A digital twin simulation platform for advertising campaigns across multiple platforms including Google Ads, Facebook Ads, and LinkedIn Ads.
 
 ## Overview
 
-The Continuum Ads Digital Twin creates faithful reproductions of the ad serving processes on major platforms, allowing marketers and developers to:
-
-- Test ad campaigns without deploying to actual platforms
-- Iterate quickly on ad strategies
-- Simulate different audience responses
-- Optimize budget allocations across platforms
-- Identify performance discrepancies between platforms
-- Leverage machine learning models for keyword planning and optimization
+The Continuum Digital Twin allows marketers to simulate ad campaign performance across multiple platforms before spending real budget. By creating a digital twin of your advertising ecosystem, you can test different budget allocations, targeting strategies, and creative approaches to predict performance.
 
 ## Features
 
-- **Cross-Platform Simulation**: Simultaneously run and compare campaigns across multiple ad platforms
-- **Custom Audiences**: Define audience segments with specific behaviors and demographics
-- **Realistic Metrics**: Generate statistically sound performance data based on real-world patterns
-- **Campaign Optimization**: Test different budget allocations and targeting strategies
-- **AI-Powered Recommendations**: Utilize machine learning for keyword suggestions and ad copy optimization
-- **Exportable Results**: Save simulation results for further analysis and reporting
-
-## Supported Platforms
-
-- Google Ads
-- Facebook Ads
-- Instagram Ads
-- Twitter Ads
-- LinkedIn Ads
-- TikTok Ads
-- Snapchat Ads
+- Simulate campaigns across Google, Facebook, and LinkedIn
+- Test different budget allocations to optimize spend
+- Evaluate targeting strategies to find the best audience approach
+- Compare platform performance for your specific offerings
+- API access for integration with other marketing tools
 
 ## Installation
 
-### Using pip
-
 ```bash
-pip install continuum-ads-digital-twin
+pip install -r requirements.txt
 ```
 
-### With visualization support
+## Usage
 
-```bash
-pip install "continuum-ads-digital-twin[visualization]"
-```
-
-### From source
-
-```bash
-git clone https://github.com/continuumads/digital-twin.git
-cd digital-twin
-pip install -e .
-```
-
-## Getting Started
-
-### Basic usage
+### Python Library
 
 ```python
-from continuum_ads_digital_twin import AdSimulator
+from ad_simulator import AdSimulator
 
-# Create simulator instance
+# Create a simulator
 simulator = AdSimulator()
 
-# Define an audience segment
+# Define audience
 audience_data = {
-    "size": 500000,
+    "size": 5000000,
     "ctr_base": 0.03,
-    "conversion_rate": 0.015,
-    "demographics_match": 0.8
+    "conversion_rate": 0.02,
+    "demographics_match": 0.8,
+    "interests_match": 0.7
 }
-simulator.google_simulator.define_audience("tech_professionals", audience_data)
-simulator.facebook_simulator.define_audience("tech_professionals", audience_data)
-simulator.linkedin_simulator.define_audience("tech_professionals", audience_data)
-simulator.tiktok_simulator.define_audience("tech_professionals", audience_data)
 
-# Create a campaign across platforms
+simulator.google_simulator.define_audience("tech_audience", audience_data)
+simulator.facebook_simulator.define_audience("tech_audience", audience_data)
+simulator.linkedin_simulator.define_audience("tech_audience", audience_data)
+
+# Create campaigns
 campaign_data = {
-    "name": "Product Launch Campaign",
+    "name": "Product Launch",
     "objective": "conversions",
     "daily_budget": 100.0,
-    "total_budget": 3000.0,
     "targeting": {
-        "audience": "tech_professionals"
+        "audience": "tech_audience"
     }
 }
+
 campaign_ids = simulator.create_cross_platform_campaign(campaign_data)
 
-# Run simulations for 30 days
+# Run simulation
 results = simulator.run_campaigns(days=30)
 
 # Export results
 simulator.export_results()
 ```
 
-### Configuring individual platforms
+### API Usage
+
+The platform includes a FastAPI-powered REST API that can be used to integrate with other tools:
+
+```bash
+# Start the API server
+uvicorn api:app --reload
+```
+
+Example API request:
 
 ```python
-# Platform-specific configurations
-platform_configs = {
-    'google': {
-        'cpc_range': [1.2, 3.5],
-        'daily_frequency_cap': 3
-    },
-    'facebook': {
-        'cpm_range': [8.0, 15.0],
-        'algorithm_warmup_days': 3
-    },
-    'tiktok': {
-        'engagement_rate': 0.05,
-        'video_completion_rate': 0.4
+import requests
+
+# API credentials
+headers = {
+    "api-key": "YOUR_API_KEY",
+    "Content-Type": "application/json"
+}
+
+# Create audience
+audience_data = {
+    "tech_professionals": {
+        "size": 5000000,
+        "ctr_base": 0.03,
+        "conversion_rate": 0.02,
+        "demographics_match": 0.8,
+        "interests_match": 0.7,
+        "behaviors_match": 0.6
     }
 }
 
-# Apply configurations
-simulator.configure_platforms(platform_configs)
+response = requests.post(
+    "http://localhost:8000/audiences",
+    headers=headers,
+    json=audience_data
+)
+
+# Create campaign
+campaign_data = {
+    "name": "API Test Campaign",
+    "objective": "conversion",
+    "daily_budget": 100.0,
+    "targeting": {
+        "audience": "tech_professionals"
+    }
+}
+
+response = requests.post(
+    "http://localhost:8000/campaigns/crossplatform",
+    headers=headers,
+    json=campaign_data
+)
+
+# Run simulation
+simulation_data = {
+    "days": 30,
+    "platforms": ["all"]
+}
+
+response = requests.post(
+    "http://localhost:8000/simulations",
+    headers=headers,
+    json=simulation_data
+)
+
+simulation_id = response.json()["simulation_id"]
+
+# Get results
+response = requests.get(
+    f"http://localhost:8000/simulations/{simulation_id}/results",
+    headers=headers
+)
+
+results = response.json()
 ```
 
-## Documentation
+See the API documentation at `http://localhost:8000/docs` after starting the server.
 
-See individual platform modules for detailed API documentation:
+## Examples
 
-- `GoogleAdsSimulator`: Simulates Google Ads campaigns
-- `FacebookAdsSimulator`: Simulates Facebook Ads campaigns
-- `InstagramAdsSimulator`: Simulates Instagram Ads campaigns
-- `TwitterAdsSimulator`: Simulates Twitter Ads campaigns
-- `LinkedInAdsSimulator`: Simulates LinkedIn Ads campaigns
-- `TikTokAdsSimulator`: Simulates TikTok Ads campaigns
-- `SnapchatAdsSimulator`: Simulates Snapchat Ads campaigns
+The `example.py` file contains several examples of how to use the simulator:
 
-## Contributing
+1. Simple campaign example
+2. Platform comparison
+3. Budget optimization
+4. Targeting optimization
+5. API usage example
 
-Contributions are welcome! Please feel free to submit a Pull Request.
+Run the examples:
 
-1. Fork the repository
-2. Create your feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add some amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
+```bash
+python example.py
+```
 
 ## License
 
-This project is licensed under the MIT License - see the LICENSE file for details.
+MIT

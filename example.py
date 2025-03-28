@@ -6,6 +6,9 @@ from ad_simulator import AdSimulator
 from google import GoogleAdsSimulator
 from facebook import FacebookAdsSimulator
 from linkedin import LinkedInAdsSimulator
+import requests
+import json
+import time
 
 def run_simple_example():
     """Run a simple example of the digital twin simulation."""
@@ -14,7 +17,7 @@ def run_simple_example():
     
     # Define common audience data
     audience_data = {
-        "size": 1000000,
+        "size": 10000000,
         "ctr_base": 0.025,
         "conversion_rate": 0.02,
         "demographics_match": 0.7,
@@ -34,7 +37,7 @@ def run_simple_example():
     google_campaign = {
         "name": "Google Dev Tools Promotion",
         "objective": "CONVERSION",
-        "daily_budget": 150.0,
+        "daily_budget": 1500.0,
         "targeting": {
             "audience": "software_developers"
         }
@@ -662,6 +665,278 @@ def run_targeting_optimization_test():
         cpa_display = "$0.00" if metrics['cpa'] == float('inf') else f"${metrics['cpa']:.2f}"
         print(f"  {platform.capitalize()}: CTR: {metrics['ctr']*100:.2f}%, CPA: {cpa_display}, Conv.: {metrics['conversions']}")
 
+def run_api_example():
+    """Example of using the Digital Twin API."""
+    print("\n=== Running API Example ===")
+    
+    # Base URL of the API
+    base_url = "http://localhost:8000"
+    
+    # API credentials - this would normally be stored securely
+    api_key = "sk-continuum-123456789"
+    headers = {
+        "api-key": api_key,
+        "Content-Type": "application/json"
+    }
+    
+    # Step 1: Define audiences
+    print("1. Defining audiences...")
+    audience_data = {
+        "tech_professionals": {
+            "size": 5000000,
+            "ctr_base": 0.03,
+            "conversion_rate": 0.02,
+            "demographics_match": 0.8,
+            "interests_match": 0.7,
+            "behaviors_match": 0.6
+        }
+    }
+    
+    response = requests.post(
+        f"{base_url}/audiences",
+        headers=headers,
+        json=audience_data
+    )
+    
+    if response.status_code != 201:
+        print(f"Error creating audiences: {response.text}")
+        return
+    
+    print(f"Audiences created: {response.json()}")
+    
+    # Step 2: Create a cross-platform campaign
+    print("\n2. Creating cross-platform campaign...")
+    campaign_data = {
+        "name": "API Test Campaign",
+        "objective": "conversion",
+        "daily_budget": 100.0,
+        "total_budget": 3000.0,
+        "targeting": {
+            "audience": "tech_professionals"
+        }
+    }
+    
+    response = requests.post(
+        f"{base_url}/campaigns/crossplatform",
+        headers=headers,
+        json=campaign_data
+    )
+    
+    if response.status_code != 201:
+        print(f"Error creating campaign: {response.text}")
+        return
+    
+    campaign_ids = response.json()["campaign_ids"]
+    print(f"Campaigns created: {campaign_ids}")
+    
+    # Step 3: Add platform-specific components
+    
+    # Google ad groups and ads
+    print("\n3. Creating Google ad group, keywords and ads...")
+    google_id = campaign_ids.get("google")
+    
+    ad_group_data = {
+        "name": "API Test Ad Group",
+        "ad_format": "search"
+    }
+    
+    response = requests.post(
+        f"{base_url}/campaigns/google/{google_id}/adgroups",
+        headers=headers,
+        json=ad_group_data
+    )
+    
+    if response.status_code != 201:
+        print(f"Error creating ad group: {response.text}")
+    else:
+        ad_group_id = response.json()["ad_group_id"]
+        print(f"Ad group created: {ad_group_id}")
+        
+        # Add keywords
+        keyword_data = {
+            "text": "digital twin marketing",
+            "match_type": "exact",
+            "bid": 2.0
+        }
+        
+        response = requests.post(
+            f"{base_url}/campaigns/google/adgroups/{ad_group_id}/keywords",
+            headers=headers,
+            json=keyword_data
+        )
+        
+        if response.status_code != 201:
+            print(f"Error creating keyword: {response.text}")
+        else:
+            print(f"Keyword created: {response.json()['keyword_id']}")
+        
+        # Add ad
+        ad_data = {
+            "headline1": "Digital Twin Marketing",
+            "headline2": "Simulate Before You Spend",
+            "description": "Test marketing campaigns before spending real money. Try our digital twin today!"
+        }
+        
+        response = requests.post(
+            f"{base_url}/campaigns/google/adgroups/{ad_group_id}/ads",
+            headers=headers,
+            json=ad_data
+        )
+        
+        if response.status_code != 201:
+            print(f"Error creating ad: {response.text}")
+        else:
+            print(f"Ad created: {response.json()['ad_id']}")
+    
+    # Facebook ad sets and ads
+    print("\n4. Creating Facebook ad set and ad...")
+    facebook_id = campaign_ids.get("facebook")
+    
+    ad_set_data = {
+        "name": "API Test Ad Set",
+        "budget": 1500.0,
+        "placements": ["feed", "instagram"],
+        "targeting": {
+            "age_range": {"min": 25, "max": 45},
+            "gender": "all",
+            "interests": ["digital marketing", "technology", "business"]
+        }
+    }
+    
+    response = requests.post(
+        f"{base_url}/campaigns/facebook/{facebook_id}/adsets",
+        headers=headers,
+        json=ad_set_data
+    )
+    
+    if response.status_code != 201:
+        print(f"Error creating ad set: {response.text}")
+    else:
+        ad_set_id = response.json()["ad_set_id"]
+        print(f"Ad set created: {ad_set_id}")
+        
+        # Add ad
+        ad_data = {
+            "title": "Marketing Simulation Platform",
+            "body": "Test your marketing campaigns before investing. Our digital twin technology simulates real-world outcomes.",
+            "image_url": "https://example.com/images/simulation.jpg",
+            "call_to_action": "LEARN_MORE"
+        }
+        
+        response = requests.post(
+            f"{base_url}/campaigns/facebook/adsets/{ad_set_id}/ads",
+            headers=headers,
+            json=ad_data
+        )
+        
+        if response.status_code != 201:
+            print(f"Error creating ad: {response.text}")
+        else:
+            print(f"Ad created: {response.json()['ad_id']}")
+    
+    # LinkedIn creative
+    print("\n5. Creating LinkedIn creative...")
+    linkedin_id = campaign_ids.get("linkedin")
+    
+    creative_data = {
+        "title": "Enterprise Marketing Simulation",
+        "body": "Our digital twin technology helps marketing teams test campaigns before spending budget. Used by Fortune 500 companies to optimize ad spend.",
+        "destination_url": "https://example.com/enterprise",
+        "call_to_action": "LEARN_MORE"
+    }
+    
+    response = requests.post(
+        f"{base_url}/campaigns/linkedin/{linkedin_id}/creatives",
+        headers=headers,
+        json=creative_data
+    )
+    
+    if response.status_code != 201:
+        print(f"Error creating creative: {response.text}")
+    else:
+        print(f"Creative created: {response.json()['creative_id']}")
+    
+    # Step 4: Run a simulation
+    print("\n6. Running simulation...")
+    simulation_data = {
+        "days": 30,
+        "platforms": ["all"],
+        "export_results": True
+    }
+    
+    response = requests.post(
+        f"{base_url}/simulations",
+        headers=headers,
+        json=simulation_data
+    )
+    
+    if response.status_code != 200:
+        print(f"Error starting simulation: {response.text}")
+        return
+    
+    simulation_response = response.json()
+    simulation_id = simulation_response["simulation_id"]
+    print(f"Simulation started: {simulation_id}")
+    
+    # Wait for simulation to complete
+    print("Waiting for simulation to complete...")
+    max_wait = 60  # seconds
+    wait_time = 0
+    status = "pending"
+    
+    while status in ["pending", "running"] and wait_time < max_wait:
+        time.sleep(5)
+        wait_time += 5
+        
+        response = requests.get(
+            f"{base_url}/simulations/{simulation_id}/status",
+            headers=headers
+        )
+        
+        if response.status_code != 200:
+            print(f"Error checking simulation status: {response.text}")
+            break
+        
+        status = response.json()["status"]
+        print(f"Simulation status: {status}")
+    
+    if status == "completed":
+        # Get simulation results
+        print("\n7. Getting simulation results...")
+        response = requests.get(
+            f"{base_url}/simulations/{simulation_id}/results",
+            headers=headers
+        )
+        
+        if response.status_code != 200:
+            print(f"Error getting simulation results: {response.text}")
+            return
+        
+        results = response.json()
+        
+        # Print summary
+        print("\nSimulation Results Summary:")
+        overall = results["overall"]
+        print(f"Total Impressions: {overall['impressions']:,}")
+        print(f"Total Clicks: {overall['clicks']:,}")
+        print(f"Total Conversions: {overall['conversions']:,}")
+        print(f"Total Spend: ${overall['spend']:.2f}")
+        print(f"Overall CTR: {overall['ctr']*100:.2f}%")
+        print(f"Overall CPA: ${overall['cpa']:.2f}")
+        
+        # Platform breakdown
+        print("\nPlatform Breakdown:")
+        for platform, metrics in results["platforms"].items():
+            print(f"\n{platform.upper()} RESULTS:")
+            print(f"  Impressions: {metrics['impressions']:,}")
+            print(f"  Clicks: {metrics['clicks']:,}")
+            print(f"  Conversions: {metrics['conversions']:,}")
+            print(f"  Spend: ${metrics['spend']:.2f}")
+            print(f"  CTR: {metrics['ctr']*100:.2f}%")
+            print(f"  CPA: ${metrics['cpa']:.2f}")
+    else:
+        print(f"Simulation did not complete within the timeout period. Final status: {status}")
+
 if __name__ == "__main__":
     print("=== Continuum Digital Twin Example ===")
     print("\nThis example demonstrates the capabilities of the Continuum Digital Twin for ad platforms.\n")
@@ -672,11 +947,12 @@ if __name__ == "__main__":
     print("2. Platform comparison")
     print("3. Budget optimization")
     print("4. Targeting optimization (NEW)")
-    print("5. Run all examples")
-    print("6. Exit")
+    print("5. API example (NEW)")
+    print("6. Run all examples")
+    print("7. Exit")
     
     while True:
-        choice = input("\nEnter choice (1-6): ")
+        choice = input("\nEnter choice (1-7): ")
         
         if choice == '1':
             run_simple_example()
@@ -691,13 +967,17 @@ if __name__ == "__main__":
             run_targeting_optimization_test()
             break
         elif choice == '5':
+            run_api_example()
+            break
+        elif choice == '6':
             run_simple_example()
             run_comparative_analysis()
             run_budget_optimization_test()
             run_targeting_optimization_test()
+            run_api_example()
             break
-        elif choice == '6':
+        elif choice == '7':
             print("Exiting...")
             break
         else:
-            print("Invalid choice. Please enter a number between 1 and 6.")
+            print("Invalid choice. Please enter a number between 1 and 7.")
