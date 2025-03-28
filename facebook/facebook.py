@@ -242,7 +242,7 @@ class FacebookAdsSimulator(BaseAdSimulator):
             if "ad_sets" not in campaign:
                 continue
                 
-            for ad_set in campaign["ad_sets"] {
+            for ad_set in campaign["ad_sets"]:
                 if ad_set["id"] == ad_set_id:
                     ad_id = f"{ad_set_id}-ad-{len(ad_set['ads']) + 1}"
                     
