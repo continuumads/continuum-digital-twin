@@ -1,0 +1,57 @@
+{
+  "google": {
+    "ad_formats": {
+      "search": {"ctr_multiplier": 1.0, "cpc_base": 0.5},
+      "display": {"ctr_multiplier": 0.3, "cpc_base": 0.2},
+      "video": {"ctr_multiplier": 0.5, "cpc_base": 0.7},
+      "shopping": {"ctr_multiplier": 1.2, "cpc_base": 0.6}
+    },
+    "default_daily_budget": 100.0,
+    "default_quality_score": 7
+  },
+  "facebook": {
+    "placement_factors": {
+      "feed": {"reach_factor": 1.0, "ctr_factor": 1.0, "cpm_base": 7.5},
+      "stories": {"reach_factor": 0.7, "ctr_factor": 0.8, "cpm_base": 6.0},
+      "marketplace": {"reach_factor": 0.5, "ctr_factor": 1.2, "cpm_base": 5.5},
+      "video": {"reach_factor": 0.6, "ctr_factor": 0.9, "cpm_base": 8.0},
+      "right_column": {"reach_factor": 0.4, "ctr_factor": 0.6, "cpm_base": 3.5},
+      "instagram": {"reach_factor": 0.9, "ctr_factor": 1.1, "cpm_base": 9.0}
+    },
+    "default_budget": 1000.0
+  },
+  "linkedin": {
+    "ad_formats": {
+      "sponsored_content": {"ctr_multiplier": 1.0, "cpm_base": 8.5},
+      "sponsored_inmails": {"ctr_multiplier": 3.0, "cpm_base": 25.0},
+      "text_ads": {"ctr_multiplier": 0.5, "cpm_base": 5.0},
+      "dynamic_ads": {"ctr_multiplier": 0.8, "cpm_base": 7.0}
+    },
+    "default_daily_budget": 100.0
+  },
+  "audiences": {
+    "default": {
+      "size": 1000000,
+      "ctr_base": 0.02,
+      "conversion_rate": 0.01,
+      "demographics_match": 0.7,
+      "interests_match": 0.5
+    },
+    "tech_professionals": {
+      "size": 500000,
+      "ctr_base": 0.03,
+      "conversion_rate": 0.015,
+      "demographics_match": 0.8,
+      "interests_match": 0.7,
+      "job_titles": ["Developer", "Engineer", "Architect", "CTO"]
+    },
+    "marketing_professionals": {
+      "size": 300000,
+      "ctr_base": 0.04,
+      "conversion_rate": 0.02,
+      "demographics_match": 0.85,
+      "interests_match": 0.75,
+      "job_titles": ["CMO", "Marketing Manager", "Digital Marketer", "Brand Manager"]
+    }
+  }
+}
