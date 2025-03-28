@@ -13,50 +13,16 @@ from datetime import datetime, timedelta
 from enum import Enum
 
 import uvicorn
-from fastapi import FastAPI, HTTPException, Depends, Header, BackgroundTasks, Query, Path, Body
-from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
+from fastapi import FastAPI, HTTPException, Depends, Header, BackgroundTasks, Query, Path, Body, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
-from fastapi.openapi.docs import get_swagger_ui_html
 from fastapi.staticfiles import StaticFiles
-from pydantic import BaseModel, Field, validator, SecretStr
+from pydantic import BaseModel, Field, field_validator, SecretStr
+from contextlib import asynccontextmanager
 
 # Set up logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
-
-# Handle bcrypt compatibility issues
-try:
-    from jose import JWTError, jwt
-    import bcrypt
-    from passlib.context import CryptContext
-    
-    # Check for bcrypt version compatibility
-    try:
-        bcrypt_version = bcrypt.__version__
-        logger.info(f"Using bcrypt version: {bcrypt_version}")
-        # Initialize with bcrypt
-        pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
-    except (AttributeError, ImportError) as e:
-        logger.warning(f"bcrypt version detection failed: {e}")
-        # Fallback to a more compatible configuration
-        pwd_context = CryptContext(
-            schemes=["bcrypt"],
-            bcrypt__rounds=12,
-            deprecated="auto"
-        )
-except ImportError as e:
-    logger.error(f"Authentication library import error: {e}")
-    # Create a mock password context for development if dependencies are missing
-    class MockCryptContext:
-        def verify(self, plain_password, hashed_password):
-            return plain_password == "admin"  # Only for development
-        
-        def hash(self, password):
-            return f"mock_hash_{password}"  # Only for development
-    
-    pwd_context = MockCryptContext()
-    logger.warning("Using mock authentication - NOT SECURE FOR PRODUCTION")
 
 # Import simulator components
 try:
@@ -72,12 +38,14 @@ except ImportError as e:
     FacebookAdsSimulator = None
     LinkedInAdsSimulator = None
 
-# Initialize FastAPI app
+# Initialize FastAPI app with documentation config
 app = FastAPI(
     title="Continuum Digital Twin API",
     description="API for simulating ad campaigns across multiple platforms",
     version="1.0.0",
-    docs_url=None,  # We'll create a custom docs endpoint with authentication
+    # Additional configuration for documentation
+    docs_url="/docs",
+    redoc_url="/redoc",
 )
 
 # Add CORS middleware
@@ -89,31 +57,8 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# JWT Authentication settings
-SECRET_KEY = os.getenv("JWT_SECRET_KEY", "REPLACE_WITH_SECURE_KEY_IN_PRODUCTION")
-ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = 60
-
-# OAuth2 scheme
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
-
-# In-memory user storage (replace with a database in production)
-USERS = {
-    "admin": {
-        "username": "admin",
-        "full_name": "Administrator",
-        "email": "admin@example.com",
-        "hashed_password": pwd_context.hash("admin"),
-        "api_key": "sk-continuum-123456789",
-        "disabled": False,
-    }
-}
-
 # Initialize simulator instances (one per user session in production)
 simulators = {}
-
-# Mock API keys for demo (use a proper database in production)
-API_KEYS = {"sk-continuum-123456789": "admin"}
 
 # Pydantic models for request/response
 class Platform(str, Enum):
@@ -141,23 +86,6 @@ class BidStrategy(str, Enum):
     BID_CAP = "bid_cap"
     TARGET_CPA = "target_cpa"
     TARGET_ROAS = "target_roas"
-
-class Token(BaseModel):
-    """JWT token response model."""
-    access_token: str
-    token_type: str
-
-class User(BaseModel):
-    """User model."""
-    username: str
-    email: Optional[str] = None
-    full_name: Optional[str] = None
-    disabled: Optional[bool] = None
-
-class UserInDB(User):
-    """User model with password hash."""
-    hashed_password: str
-    api_key: str
 
 class AudienceData(BaseModel):
     """Audience configuration."""
@@ -282,94 +210,8 @@ class ErrorResponse(BaseModel):
     error_code: Optional[str] = None
     timestamp: datetime = Field(default_factory=datetime.now)
 
-# Authentication functions
-def verify_password(plain_password, hashed_password):
-    """Verify a password against a hash."""
-    try:
-        return pwd_context.verify(plain_password, hashed_password)
-    except Exception as e:
-        logger.error(f"Password verification error: {e}")
-        # For development: fallback for when bcrypt has issues
-        if os.getenv("ENVIRONMENT") == "development":
-            return plain_password == "admin"
-        return False
-
-def get_user(username: str):
-    """Get a user by username."""
-    if username in USERS:
-        user_dict = USERS[username]
-        return UserInDB(**user_dict)
-    return None
-
-def authenticate_user(username: str, password: str):
-    """Authenticate a user."""
-    user = get_user(username)
-    if not user:
-        return False
-    if not verify_password(password, user.hashed_password):
-        return False
-    return user
-
-def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
-    """Create a JWT token."""
-    to_encode = data.copy()
-    if expires_delta:
-        expire = datetime.utcnow() + expires_delta
-    else:
-        expire = datetime.utcnow() + timedelta(minutes=15)
-    to_encode.update({"exp": expire})
-    try:
-        encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
-        return encoded_jwt
-    except Exception as e:
-        logger.error(f"Token creation error: {e}")
-        # In development, return a mock token if JWT fails
-        if os.getenv("ENVIRONMENT") == "development":
-            return f"dev_token_{to_encode['sub']}"
-        raise
-
-async def get_current_user(token: str = Depends(oauth2_scheme)):
-    """Get the current user from a JWT token."""
-    credentials_exception = HTTPException(
-        status_code=401,
-        detail="Could not validate credentials",
-        headers={"WWW-Authenticate": "Bearer"},
-    )
-    try:
-        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-        username: str = payload.get("sub")
-        if username is None:
-            raise credentials_exception
-    except JWTError as e:
-        logger.error(f"JWT decode error: {e}")
-        raise credentials_exception
-    except Exception as e:
-        logger.error(f"Unexpected authentication error: {e}")
-        raise credentials_exception
-    
-    user = get_user(username)
-    if user is None:
-        raise credentials_exception
-    return user
-
-async def get_current_active_user(current_user: User = Depends(get_current_user)):
-    """Get the current active user."""
-    if current_user.disabled:
-        raise HTTPException(status_code=400, detail="Inactive user")
-    return current_user
-
-async def validate_api_key(api_key: str = Header(..., description="API Key")):
-    """Validate an API key."""
-    if api_key not in API_KEYS:
-        raise HTTPException(
-            status_code=401, 
-            detail="Invalid API key", 
-            headers={"WWW-Authenticate": "APIKey"}
-        )
-    return API_KEYS[api_key]
-
 # Simulator management
-def get_simulator(user_id: str):
+def get_simulator(user_id: str = "default"):
     """Get or create a simulator for a user."""
     if user_id not in simulators:
         if AdSimulator is None:
@@ -388,49 +230,17 @@ def create_audiences(simulator: AdSimulator, audiences: Dict[str, AudienceData])
         simulator.linkedin_simulator.define_audience(name, data.dict())
 
 # API routes
-@app.post("/token", response_model=Token)
-async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends()):
-    """Get a JWT token."""
-    user = authenticate_user(form_data.username, form_data.password)
-    if not user:
-        raise HTTPException(
-            status_code=401,
-            detail="Incorrect username or password",
-            headers={"WWW-Authenticate": "Bearer"},
-        )
-    access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
-    access_token = create_access_token(
-        data={"sub": user.username}, expires_delta=access_token_expires
-    )
-    return {"access_token": access_token, "token_type": "bearer"}
-
-@app.get("/docs", include_in_schema=False)
-async def get_documentation(current_user: User = Depends(get_current_active_user)):
-    """Get custom Swagger UI documentation."""
-    return get_swagger_ui_html(openapi_url="/openapi.json", title="API Documentation")
-
-@app.get("/users/me", response_model=User)
-async def read_users_me(current_user: User = Depends(get_current_active_user)):
-    """Get the current user."""
-    return current_user
-
 @app.post("/audiences", status_code=201)
-async def create_audience(
-    audience_data: Dict[str, AudienceData],
-    user_id: str = Depends(validate_api_key)
-):
+async def create_audience(audience_data: Dict[str, AudienceData]):
     """Create an audience for simulation."""
-    simulator = get_simulator(user_id)
+    simulator = get_simulator()
     create_audiences(simulator, audience_data)
     return {"message": f"Created {len(audience_data)} audiences", "audiences": list(audience_data.keys())}
 
 @app.post("/campaigns/google", status_code=201)
-async def create_google_campaign(
-    campaign_data: CampaignData,
-    user_id: str = Depends(validate_api_key)
-):
+async def create_google_campaign(campaign_data: CampaignData):
     """Create a Google Ads campaign."""
-    simulator = get_simulator(user_id)
+    simulator = get_simulator()
     
     # Map objective to Google format
     objective_mapping = {
@@ -464,11 +274,10 @@ async def create_google_campaign(
 @app.post("/campaigns/google/{campaign_id}/adgroups", status_code=201)
 async def create_google_ad_group(
     campaign_id: str,
-    ad_group_data: GoogleAdGroupData,
-    user_id: str = Depends(validate_api_key)
+    ad_group_data: GoogleAdGroupData
 ):
     """Create a Google Ads ad group."""
-    simulator = get_simulator(user_id)
+    simulator = get_simulator()
     ad_group_id = simulator.google_simulator.create_ad_group(campaign_id, ad_group_data.dict())
     return {
         "ad_group_id": ad_group_id,
@@ -479,11 +288,10 @@ async def create_google_ad_group(
 @app.post("/campaigns/google/adgroups/{ad_group_id}/keywords", status_code=201)
 async def add_google_keywords(
     ad_group_id: str,
-    keyword_data: GoogleKeywordData,
-    user_id: str = Depends(validate_api_key)
+    keyword_data: GoogleKeywordData
 ):
     """Add a keyword to a Google Ads ad group."""
-    simulator = get_simulator(user_id)
+    simulator = get_simulator()
     keyword_id = simulator.google_simulator.add_keyword(
         ad_group_id, 
         keyword_data.text, 
@@ -499,11 +307,10 @@ async def add_google_keywords(
 @app.post("/campaigns/google/adgroups/{ad_group_id}/ads", status_code=201)
 async def create_google_ad(
     ad_group_id: str,
-    ad_data: GoogleAdData,
-    user_id: str = Depends(validate_api_key)
+    ad_data: GoogleAdData
 ):
     """Create a Google ad."""
-    simulator = get_simulator(user_id)
+    simulator = get_simulator()
     ad_id = simulator.google_simulator.create_ad(ad_group_id, ad_data.dict())
     return {
         "ad_id": ad_id,
@@ -512,12 +319,9 @@ async def create_google_ad(
     }
 
 @app.post("/campaigns/facebook", status_code=201)
-async def create_facebook_campaign(
-    campaign_data: CampaignData,
-    user_id: str = Depends(validate_api_key)
-):
+async def create_facebook_campaign(campaign_data: CampaignData):
     """Create a Facebook Ads campaign."""
-    simulator = get_simulator(user_id)
+    simulator = get_simulator()
     
     # Map objective to Facebook format
     objective_mapping = {
@@ -548,11 +352,10 @@ async def create_facebook_campaign(
 @app.post("/campaigns/facebook/{campaign_id}/adsets", status_code=201)
 async def create_facebook_ad_set(
     campaign_id: str,
-    ad_set_data: FacebookAdSetData,
-    user_id: str = Depends(validate_api_key)
+    ad_set_data: FacebookAdSetData
 ):
     """Create a Facebook ad set."""
-    simulator = get_simulator(user_id)
+    simulator = get_simulator()
     ad_set_id = simulator.facebook_simulator.create_ad_set(campaign_id, ad_set_data.dict())
     return {
         "ad_set_id": ad_set_id,
@@ -563,11 +366,10 @@ async def create_facebook_ad_set(
 @app.post("/campaigns/facebook/adsets/{ad_set_id}/ads", status_code=201)
 async def create_facebook_ad(
     ad_set_id: str,
-    ad_data: FacebookAdData,
-    user_id: str = Depends(validate_api_key)
+    ad_data: FacebookAdData
 ):
     """Create a Facebook ad."""
-    simulator = get_simulator(user_id)
+    simulator = get_simulator()
     ad_id = simulator.facebook_simulator.create_ad(ad_set_id, ad_data.dict())
     return {
         "ad_id": ad_id,
@@ -576,12 +378,9 @@ async def create_facebook_ad(
     }
 
 @app.post("/campaigns/linkedin", status_code=201)
-async def create_linkedin_campaign(
-    campaign_data: CampaignData,
-    user_id: str = Depends(validate_api_key)
-):
+async def create_linkedin_campaign(campaign_data: CampaignData):
     """Create a LinkedIn Ads campaign."""
-    simulator = get_simulator(user_id)
+    simulator = get_simulator()
     
     # Map objective to LinkedIn format
     objective_mapping = {
@@ -613,11 +412,10 @@ async def create_linkedin_campaign(
 @app.post("/campaigns/linkedin/{campaign_id}/creatives", status_code=201)
 async def create_linkedin_creative(
     campaign_id: str,
-    creative_data: LinkedInCreativeData,
-    user_id: str = Depends(validate_api_key)
+    creative_data: LinkedInCreativeData
 ):
     """Create a LinkedIn creative."""
-    simulator = get_simulator(user_id)
+    simulator = get_simulator()
     creative_id = simulator.linkedin_simulator.create_creative(campaign_id, creative_data.dict())
     return {
         "creative_id": creative_id,
@@ -628,11 +426,10 @@ async def create_linkedin_creative(
 @app.post("/campaigns/crossplatform", status_code=201)
 async def create_cross_platform_campaign(
     campaign_data: CampaignData,
-    platforms: List[Platform] = Query([Platform.ALL]),
-    user_id: str = Depends(validate_api_key)
+    platforms: List[Platform] = Query([Platform.ALL])
 ):
     """Create a campaign across multiple platforms."""
-    simulator = get_simulator(user_id)
+    simulator = get_simulator()
     
     # Convert Platform enum to strings
     platform_list = []
@@ -664,11 +461,10 @@ async def create_cross_platform_campaign(
 @app.post("/simulations", response_model=SimulationResponse)
 async def run_simulation(
     simulation_req: SimulationRequest,
-    background_tasks: BackgroundTasks,
-    user_id: str = Depends(validate_api_key)
+    background_tasks: BackgroundTasks
 ):
     """Run a simulation."""
-    simulator = get_simulator(user_id)
+    simulator = get_simulator()
     
     # Generate a unique ID for this simulation
     simulation_id = f"sim-{str(uuid.uuid4())[:8]}"
@@ -700,7 +496,7 @@ async def run_simulation(
         platform_list,
         simulation_req.speed_factor,
         simulation_req.export_results,
-        user_id
+        "default"  # Default user ID
     )
     
     return response
@@ -789,11 +585,9 @@ async def run_simulation_task(
             }, f)
 
 @app.get("/simulations/{simulation_id}/status", response_model=SimulationResponse)
-async def get_simulation_status(
-    simulation_id: str,
-    user_id: str = Depends(validate_api_key)
-):
+async def get_simulation_status(simulation_id: str):
     """Get the status of a simulation."""
+    user_id = "default"  # Use default user ID
     simulations_dir = os.path.join("results", "simulations", user_id)
     status_path = os.path.join(simulations_dir, f"{simulation_id}_status.json")
     
@@ -825,11 +619,9 @@ async def get_simulation_status(
     )
 
 @app.get("/simulations/{simulation_id}/results", response_model=SimulationResults)
-async def get_simulation_results(
-    simulation_id: str,
-    user_id: str = Depends(validate_api_key)
-):
+async def get_simulation_results(simulation_id: str):
     """Get the results of a simulation."""
+    user_id = "default"  # Use default user ID
     simulations_dir = os.path.join("results", "simulations", user_id)
     results_path = os.path.join(simulations_dir, f"{simulation_id}_results.json")
     
@@ -887,8 +679,7 @@ async def get_simulation_results(
 @app.post("/campaigns/optimize", status_code=200)
 async def optimize_campaigns(
     simulation_id: str,
-    optimization_type: str = Query(..., description="Type of optimization (budget, targeting, creative)"),
-    user_id: str = Depends(validate_api_key)
+    optimization_type: str = Query(..., description="Type of optimization (budget, targeting, creative)")
 ):
     """Optimize campaigns based on simulation results."""
     # This would analyze simulation results and provide optimization recommendations
@@ -918,8 +709,7 @@ async def optimize_campaigns(
 @app.post("/simulations/compare", status_code=200)
 async def compare_simulations(
     simulation_ids: List[str],
-    metric: str = Query("cpa", description="Metric to compare (cpa, ctr, roas)"),
-    user_id: str = Depends(validate_api_key)
+    metric: str = Query("cpa", description="Metric to compare (cpa, ctr, roas)")
 ):
     """Compare multiple simulation results."""
     # This would load and compare results from multiple simulations
@@ -968,29 +758,6 @@ async def general_exception_handler(request, exc):
         ).dict()
     )
 
-# Application startup and shutdown events
-@app.on_event("startup")
-async def startup_event():
-    """Run when the application starts."""
-    logger.info("API server starting up")
-    
-    # Create necessary directories
-    os.makedirs("results/simulations", exist_ok=True)
-    
-    # Verify authentication is working
-    try:
-        test_hash = pwd_context.hash("test")
-        pwd_context.verify("test", test_hash)
-        logger.info("Authentication system initialized successfully")
-    except Exception as e:
-        logger.error(f"Authentication system initialization error: {e}")
-        logger.warning("Using fallback authentication - not secure for production!")
-
-@app.on_event("shutdown")
-async def shutdown_event():
-    """Run when the application shuts down."""
-    logger.info("API server shutting down")
-
 # Health check endpoint
 @app.get("/health", status_code=200)
 async def health_check():
@@ -998,7 +765,6 @@ async def health_check():
     return {
         "status": "ok",
         "time": datetime.now().isoformat(),
-        "auth_system": "working" if pwd_context is not None else "limited",
         "simulator_available": AdSimulator is not None
     }
 
@@ -1011,9 +777,7 @@ if __name__ == "__main__":
     print("\n" + "="*50)
     print("Continuum Digital Twin API Server")
     print("="*50)
-    print("Documentation: http://localhost:8000/docs (requires login)")
-    print("Default credentials: admin/admin")
-    print("Default API key: sk-continuum-123456789")
+    print("Documentation: http://localhost:8000/docs")
     print("="*50 + "\n")
     
     # Start the server
