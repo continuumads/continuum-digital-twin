@@ -1,0 +1,25 @@
+{
+  "platform": "GoogleAds",
+  "simulation_period": "30 days",
+  "start_date": "2025-03-28T10:46:48.457960",
+  "end_date": "2025-04-27T10:46:48.457960",
+  "campaigns": {
+    "GoogleAds-1": {
+      "impressions": 39841,
+      "clicks": 1551,
+      "conversions": 10,
+      "spend": 1277.5768314554487,
+      "ctr": 0.03892974573931377,
+      "cpa": 127.75768314554486,
+      "roas": 0.07827317898844284
+    }
+  },
+  "total_metrics": {
+    "impressions": 39841,
+    "clicks": 1551,
+    "conversions": 10,
+    "spend": 1277.5768314554487,
+    "ctr": 0.03892974573931377,
+    "cpa": 127.75768314554486
+  }
+}

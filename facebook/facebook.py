@@ -870,8 +870,16 @@ class FacebookAdsSimulator(BaseAdSimulator):
         if day_factor < 1.0:  # Weekend
             # Boost Instagram share on weekends
             instagram_boost = random.uniform(0.05, 0.1)
-            facebook_reduction = instagram_boost * (base_breakdown["facebook"] / (base_breakdown["facebook"] + base_breakdown["whatsapp"]))
-            whatsapp_reduction = instagram_boost * (base_breakdown["whatsapp"] / (base_breakdown["facebook"] + base_breakdown["whatsapp"]))
+            
+            # Prevent division by zero by checking if the sum is greater than zero
+            facebook_whatsapp_sum = base_breakdown["facebook"] + base_breakdown["whatsapp"]
+            if facebook_whatsapp_sum > 0:
+                facebook_reduction = instagram_boost * (base_breakdown["facebook"] / facebook_whatsapp_sum)
+                whatsapp_reduction = instagram_boost * (base_breakdown["whatsapp"] / facebook_whatsapp_sum)
+            else:
+                # Handle case where both are zero - split boost reduction equally
+                facebook_reduction = instagram_boost / 2
+                whatsapp_reduction = instagram_boost / 2
             
             daily_breakdown["facebook"] = max(0, base_breakdown["facebook"] - facebook_reduction)
             daily_breakdown["instagram"] = base_breakdown["instagram"] + instagram_boost
@@ -889,6 +897,11 @@ class FacebookAdsSimulator(BaseAdSimulator):
             if total > 0:
                 for platform in daily_breakdown:
                     daily_breakdown[platform] /= total
+            else:
+                # If all values are zero, provide a default distribution
+                daily_breakdown["facebook"] = 0.6
+                daily_breakdown["instagram"] = 0.3
+                daily_breakdown["whatsapp"] = 0.1
         
         return daily_breakdown
     

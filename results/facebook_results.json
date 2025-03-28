@@ -1,0 +1,598 @@
+{
+  "platform": "MetaAds",
+  "simulation_period": "30 days",
+  "start_date": "2025-03-28T10:46:48.458994",
+  "end_date": "2025-04-27T10:46:48.458994",
+  "campaigns": {
+    "MetaAds-1": {
+      "impressions": 0,
+      "clicks": 0,
+      "conversions": 0,
+      "spend": 0.0,
+      "ctr": 0,
+      "cpa": 0,
+      "roas": 0,
+      "platform_breakdown": {
+        "facebook": 0.0,
+        "instagram": 0,
+        "whatsapp": 0
+      },
+      "quality_ranking": "BELOW_AVERAGE",
+      "engagement_rate": 0.0,
+      "message_deliverability": null,
+      "optimization_score": 1,
+      "auction_competitiveness": {
+        "facebook": {
+          "overlap_rate": 0.18812404838119853,
+          "outranking_share": 0.5125337216205667,
+          "impression_share": 0.5160641375021442,
+          "competitiveness": "HIGH"
+        },
+        "whatsapp": {
+          "overlap_rate": 0.2421636333429331,
+          "outranking_share": 0.6684566866389132,
+          "impression_share": 0.3268747488187601,
+          "competitiveness": "MEDIUM"
+        }
+      },
+      "compliance_status": {
+        "status": "COMPLIANT",
+        "issues": []
+      },
+      "cross_platform_frequency": {},
+      "time_series_data": [
+        {
+          "date": "2025-02-26",
+          "impressions": 0,
+          "clicks": 0,
+          "conversions": 0,
+          "spend": 0.0,
+          "ctr": 0,
+          "cpa": 0,
+          "platform_breakdown": {
+            "facebook": 1.0,
+            "instagram": 0.0,
+            "whatsapp": 0.0
+          }
+        },
+        {
+          "date": "2025-02-27",
+          "impressions": 0,
+          "clicks": 0,
+          "conversions": 0,
+          "spend": 0.0,
+          "ctr": 0,
+          "cpa": 0,
+          "platform_breakdown": {
+            "facebook": 1.0,
+            "instagram": 0.0,
+            "whatsapp": 0.0
+          }
+        },
+        {
+          "date": "2025-02-28",
+          "impressions": 0,
+          "clicks": 0,
+          "conversions": 0,
+          "spend": 0.0,
+          "ctr": 0,
+          "cpa": 0,
+          "platform_breakdown": {
+            "facebook": 1.0,
+            "instagram": 0.0,
+            "whatsapp": 0.0
+          }
+        },
+        {
+          "date": "2025-03-01",
+          "impressions": 0,
+          "clicks": 0,
+          "conversions": 0,
+          "spend": 0.0,
+          "ctr": 0,
+          "cpa": 0,
+          "platform_breakdown": {
+            "facebook": 0,
+            "instagram": 0.08664421865479566,
+            "whatsapp": 0
+          }
+        },
+        {
+          "date": "2025-03-02",
+          "impressions": 0,
+          "clicks": 0,
+          "conversions": 0,
+          "spend": 0.0,
+          "ctr": 0,
+          "cpa": 0,
+          "platform_breakdown": {
+            "facebook": 0,
+            "instagram": 0.06998357527984592,
+            "whatsapp": 0
+          }
+        },
+        {
+          "date": "2025-03-03",
+          "impressions": 0,
+          "clicks": 0,
+          "conversions": 0,
+          "spend": 0.0,
+          "ctr": 0,
+          "cpa": 0,
+          "platform_breakdown": {
+            "facebook": 0.0,
+            "instagram": 0.5,
+            "whatsapp": 0.5
+          }
+        },
+        {
+          "date": "2025-03-04",
+          "impressions": 0,
+          "clicks": 0,
+          "conversions": 0,
+          "spend": 0.0,
+          "ctr": 0,
+          "cpa": 0,
+          "platform_breakdown": {
+            "facebook": 1.0,
+            "instagram": 0.0,
+            "whatsapp": 0.0
+          }
+        },
+        {
+          "date": "2025-03-05",
+          "impressions": 0,
+          "clicks": 0,
+          "conversions": 0,
+          "spend": 0.0,
+          "ctr": 0,
+          "cpa": 0,
+          "platform_breakdown": {
+            "facebook": 0.0,
+            "instagram": 0.5,
+            "whatsapp": 0.5
+          }
+        },
+        {
+          "date": "2025-03-06",
+          "impressions": 0,
+          "clicks": 0,
+          "conversions": 0,
+          "spend": 0.0,
+          "ctr": 0,
+          "cpa": 0,
+          "platform_breakdown": {
+            "facebook": 1.0,
+            "instagram": 0.0,
+            "whatsapp": 0.0
+          }
+        },
+        {
+          "date": "2025-03-07",
+          "impressions": 0,
+          "clicks": 0,
+          "conversions": 0,
+          "spend": 0.0,
+          "ctr": 0,
+          "cpa": 0,
+          "platform_breakdown": {
+            "facebook": 1.0,
+            "instagram": 0.0,
+            "whatsapp": 0.0
+          }
+        },
+        {
+          "date": "2025-03-08",
+          "impressions": 0,
+          "clicks": 0,
+          "conversions": 0,
+          "spend": 0.0,
+          "ctr": 0,
+          "cpa": 0,
+          "platform_breakdown": {
+            "facebook": 0,
+            "instagram": 0.08888825738442921,
+            "whatsapp": 0
+          }
+        },
+        {
+          "date": "2025-03-09",
+          "impressions": 0,
+          "clicks": 0,
+          "conversions": 0,
+          "spend": 0.0,
+          "ctr": 0,
+          "cpa": 0,
+          "platform_breakdown": {
+            "facebook": 0,
+            "instagram": 0.08644106933984366,
+            "whatsapp": 0
+          }
+        },
+        {
+          "date": "2025-03-10",
+          "impressions": 0,
+          "clicks": 0,
+          "conversions": 0,
+          "spend": 0.0,
+          "ctr": 0,
+          "cpa": 0,
+          "platform_breakdown": {
+            "facebook": 0.0,
+            "instagram": 0.5,
+            "whatsapp": 0.5
+          }
+        },
+        {
+          "date": "2025-03-11",
+          "impressions": 0,
+          "clicks": 0,
+          "conversions": 0,
+          "spend": 0.0,
+          "ctr": 0,
+          "cpa": 0,
+          "platform_breakdown": {
+            "facebook": 1.0,
+            "instagram": 0.0,
+            "whatsapp": 0.0
+          }
+        },
+        {
+          "date": "2025-03-12",
+          "impressions": 0,
+          "clicks": 0,
+          "conversions": 0,
+          "spend": 0.0,
+          "ctr": 0,
+          "cpa": 0,
+          "platform_breakdown": {
+            "facebook": 1.0,
+            "instagram": 0.0,
+            "whatsapp": 0.0
+          }
+        },
+        {
+          "date": "2025-03-13",
+          "impressions": 0,
+          "clicks": 0,
+          "conversions": 0,
+          "spend": 0.0,
+          "ctr": 0,
+          "cpa": 0,
+          "platform_breakdown": {
+            "facebook": 0.0,
+            "instagram": 0.5,
+            "whatsapp": 0.5
+          }
+        },
+        {
+          "date": "2025-03-14",
+          "impressions": 0,
+          "clicks": 0,
+          "conversions": 0,
+          "spend": 0.0,
+          "ctr": 0,
+          "cpa": 0,
+          "platform_breakdown": {
+            "facebook": 0.0,
+            "instagram": 0.5,
+            "whatsapp": 0.5
+          }
+        },
+        {
+          "date": "2025-03-15",
+          "impressions": 0,
+          "clicks": 0,
+          "conversions": 0,
+          "spend": 0.0,
+          "ctr": 0,
+          "cpa": 0,
+          "platform_breakdown": {
+            "facebook": 0,
+            "instagram": 0.08245139146721311,
+            "whatsapp": 0
+          }
+        },
+        {
+          "date": "2025-03-16",
+          "impressions": 0,
+          "clicks": 0,
+          "conversions": 0,
+          "spend": 0.0,
+          "ctr": 0,
+          "cpa": 0,
+          "platform_breakdown": {
+            "facebook": 0,
+            "instagram": 0.0687700603237521,
+            "whatsapp": 0
+          }
+        },
+        {
+          "date": "2025-03-17",
+          "impressions": 0,
+          "clicks": 0,
+          "conversions": 0,
+          "spend": 0.0,
+          "ctr": 0,
+          "cpa": 0,
+          "platform_breakdown": {
+            "facebook": 1.0,
+            "instagram": 0.0,
+            "whatsapp": 0.0
+          }
+        },
+        {
+          "date": "2025-03-18",
+          "impressions": 0,
+          "clicks": 0,
+          "conversions": 0,
+          "spend": 0.0,
+          "ctr": 0,
+          "cpa": 0,
+          "platform_breakdown": {
+            "facebook": 1.0,
+            "instagram": 0.0,
+            "whatsapp": 0.0
+          }
+        },
+        {
+          "date": "2025-03-19",
+          "impressions": 0,
+          "clicks": 0,
+          "conversions": 0,
+          "spend": 0.0,
+          "ctr": 0,
+          "cpa": 0,
+          "platform_breakdown": {
+            "facebook": 0.0,
+            "instagram": 0.5,
+            "whatsapp": 0.5
+          }
+        },
+        {
+          "date": "2025-03-20",
+          "impressions": 0,
+          "clicks": 0,
+          "conversions": 0,
+          "spend": 0.0,
+          "ctr": 0,
+          "cpa": 0,
+          "platform_breakdown": {
+            "facebook": 1.0,
+            "instagram": 0.0,
+            "whatsapp": 0.0
+          }
+        },
+        {
+          "date": "2025-03-21",
+          "impressions": 0,
+          "clicks": 0,
+          "conversions": 0,
+          "spend": 0.0,
+          "ctr": 0,
+          "cpa": 0,
+          "platform_breakdown": {
+            "facebook": 1.0,
+            "instagram": 0.0,
+            "whatsapp": 0.0
+          }
+        },
+        {
+          "date": "2025-03-22",
+          "impressions": 0,
+          "clicks": 0,
+          "conversions": 0,
+          "spend": 0.0,
+          "ctr": 0,
+          "cpa": 0,
+          "platform_breakdown": {
+            "facebook": 0,
+            "instagram": 0.07961484321681186,
+            "whatsapp": 0
+          }
+        },
+        {
+          "date": "2025-03-23",
+          "impressions": 0,
+          "clicks": 0,
+          "conversions": 0,
+          "spend": 0.0,
+          "ctr": 0,
+          "cpa": 0,
+          "platform_breakdown": {
+            "facebook": 0,
+            "instagram": 0.08526592423322299,
+            "whatsapp": 0
+          }
+        },
+        {
+          "date": "2025-03-24",
+          "impressions": 0,
+          "clicks": 0,
+          "conversions": 0,
+          "spend": 0.0,
+          "ctr": 0,
+          "cpa": 0,
+          "platform_breakdown": {
+            "facebook": 0.0,
+            "instagram": 0.5,
+            "whatsapp": 0.5
+          }
+        },
+        {
+          "date": "2025-03-25",
+          "impressions": 0,
+          "clicks": 0,
+          "conversions": 0,
+          "spend": 0.0,
+          "ctr": 0,
+          "cpa": 0,
+          "platform_breakdown": {
+            "facebook": 1.0,
+            "instagram": 0.0,
+            "whatsapp": 0.0
+          }
+        },
+        {
+          "date": "2025-03-26",
+          "impressions": 0,
+          "clicks": 0,
+          "conversions": 0,
+          "spend": 0.0,
+          "ctr": 0,
+          "cpa": 0,
+          "platform_breakdown": {
+            "facebook": 0.0,
+            "instagram": 0.5,
+            "whatsapp": 0.5
+          }
+        },
+        {
+          "date": "2025-03-27",
+          "impressions": 0,
+          "clicks": 0,
+          "conversions": 0,
+          "spend": 0.0,
+          "ctr": 0,
+          "cpa": 0,
+          "platform_breakdown": {
+            "facebook": 1.0,
+            "instagram": 0.0,
+            "whatsapp": 0.0
+          }
+        }
+      ],
+      "advantage_plus_performance": {
+        "enabled": false,
+        "metrics": {
+          "impressions": 0,
+          "clicks": 0,
+          "conversions": 0,
+          "spend": 0.0
+        },
+        "performance_lift": 0.0,
+        "top_combinations": []
+      },
+      "publisher_platform_breakdown": {
+        "facebook": {
+          "feed": 0.0,
+          "marketplace": 0,
+          "video": 0,
+          "right_column": 0,
+          "search": 0,
+          "instant_articles": 0
+        },
+        "instagram": {
+          "feed": 0,
+          "stories": 0,
+          "explore": 0,
+          "reels": 0,
+          "shop": 0,
+          "threads": 0
+        },
+        "whatsapp": {
+          "business": 0,
+          "click_to_chat": 0,
+          "status": 0
+        }
+      }
+    }
+  },
+  "total_metrics": {
+    "impressions": 0,
+    "clicks": 0,
+    "conversions": 0,
+    "spend": 0.0,
+    "ctr": 0,
+    "cpa": 0,
+    "roas": 0,
+    "platform_summary": {
+      "facebook": 0,
+      "instagram": 0,
+      "whatsapp": 0
+    },
+    "rate_limit_status": {
+      "facebook_ads_management": {
+        "calls_used": 2411,
+        "calls_limit": 5000,
+        "reset_time_seconds": 2039,
+        "error_code_if_exceeded": 17
+      },
+      "instagram_api": {
+        "calls_used": 73,
+        "calls_limit": 200,
+        "reset_time_seconds": 1636,
+        "error_code_if_exceeded": 17
+      },
+      "whatsapp_business_api": {
+        "calls_used": 3678,
+        "calls_limit": 5000,
+        "reset_time_seconds": 2827,
+        "messaging_limit_used": 93,
+        "messaging_limit": 250,
+        "error_code_if_exceeded": 80007
+      },
+      "auto_version_upgrade": {
+        "enabled": true,
+        "eligible_endpoints": [
+          "campaigns",
+          "adsets",
+          "ads",
+          "insights"
+        ],
+        "version_from": "v21.0",
+        "version_to": "v22.0"
+      }
+    },
+    "api_call_efficiency": {
+      "call_success_rate": 0.9884869351599809,
+      "average_response_time_ms": 237.3721446460431,
+      "throttled_requests": 5,
+      "batch_efficiency": 0.8290194327658138
+    },
+    "api_version": "v22.0",
+    "advantage_plus_adoption": 0.0,
+    "cross_platform_lift": {
+      "platform_metrics": {
+        "facebook": {
+          "impressions": 0,
+          "clicks": 0,
+          "conversions": 0,
+          "ctr": 0,
+          "cvr": 0
+        },
+        "instagram": {
+          "impressions": 0,
+          "clicks": 0,
+          "conversions": 0,
+          "ctr": 0,
+          "cvr": 0
+        },
+        "whatsapp": {
+          "impressions": 0,
+          "clicks": 0,
+          "conversions": 0,
+          "ctr": 0,
+          "cvr": 0
+        },
+        "cross_platform": {
+          "impressions": 0,
+          "clicks": 0,
+          "conversions": 0,
+          "ctr": 0,
+          "cvr": 0
+        }
+      },
+      "lift": {
+        "ctr_lift": 0,
+        "cvr_lift": 0
+      },
+      "cross_platform_campaign_count": 0,
+      "single_platform_campaign_counts": {
+        "facebook": 1,
+        "instagram": 0,
+        "whatsapp": 0
+      }
+    }
+  }
+}

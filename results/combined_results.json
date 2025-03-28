@@ -1,0 +1,126 @@
+{
+  "total_metrics": {
+    "impressions": 39841,
+    "clicks": 1551,
+    "conversions": 10,
+    "spend": 1277.5768314554487,
+    "ctr": 0.03892974573931377,
+    "cpa": 127.75768314554486
+  },
+  "platform_comparison": {
+    "google": {
+      "impressions": 39841,
+      "clicks": 1551,
+      "conversions": 10,
+      "spend": 1277.5768314554487,
+      "ctr": 0.03892974573931377,
+      "cpa": 127.75768314554486
+    },
+    "facebook": {
+      "impressions": 0,
+      "clicks": 0,
+      "conversions": 0,
+      "spend": 0.0,
+      "ctr": 0,
+      "cpa": 0,
+      "roas": 0,
+      "platform_summary": {
+        "facebook": 0,
+        "instagram": 0,
+        "whatsapp": 0
+      },
+      "rate_limit_status": {
+        "facebook_ads_management": {
+          "calls_used": 2411,
+          "calls_limit": 5000,
+          "reset_time_seconds": 2039,
+          "error_code_if_exceeded": 17
+        },
+        "instagram_api": {
+          "calls_used": 73,
+          "calls_limit": 200,
+          "reset_time_seconds": 1636,
+          "error_code_if_exceeded": 17
+        },
+        "whatsapp_business_api": {
+          "calls_used": 3678,
+          "calls_limit": 5000,
+          "reset_time_seconds": 2827,
+          "messaging_limit_used": 93,
+          "messaging_limit": 250,
+          "error_code_if_exceeded": 80007
+        },
+        "auto_version_upgrade": {
+          "enabled": true,
+          "eligible_endpoints": [
+            "campaigns",
+            "adsets",
+            "ads",
+            "insights"
+          ],
+          "version_from": "v21.0",
+          "version_to": "v22.0"
+        }
+      },
+      "api_call_efficiency": {
+        "call_success_rate": 0.9884869351599809,
+        "average_response_time_ms": 237.3721446460431,
+        "throttled_requests": 5,
+        "batch_efficiency": 0.8290194327658138
+      },
+      "api_version": "v22.0",
+      "advantage_plus_adoption": 0.0,
+      "cross_platform_lift": {
+        "platform_metrics": {
+          "facebook": {
+            "impressions": 0,
+            "clicks": 0,
+            "conversions": 0,
+            "ctr": 0,
+            "cvr": 0
+          },
+          "instagram": {
+            "impressions": 0,
+            "clicks": 0,
+            "conversions": 0,
+            "ctr": 0,
+            "cvr": 0
+          },
+          "whatsapp": {
+            "impressions": 0,
+            "clicks": 0,
+            "conversions": 0,
+            "ctr": 0,
+            "cvr": 0
+          },
+          "cross_platform": {
+            "impressions": 0,
+            "clicks": 0,
+            "conversions": 0,
+            "ctr": 0,
+            "cvr": 0
+          }
+        },
+        "lift": {
+          "ctr_lift": 0,
+          "cvr_lift": 0
+        },
+        "cross_platform_campaign_count": 0,
+        "single_platform_campaign_counts": {
+          "facebook": 1,
+          "instagram": 0,
+          "whatsapp": 0
+        }
+      }
+    },
+    "linkedin": {
+      "impressions": 0,
+      "clicks": 0,
+      "conversions": 0,
+      "spend": 0.0,
+      "ctr": 0.0,
+      "cpa": 0.0
+    }
+  },
+  "campaigns": {}
+}
